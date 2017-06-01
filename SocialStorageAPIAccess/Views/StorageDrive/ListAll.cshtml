@@ -1,0 +1,56 @@
+﻿@model IEnumerable<SocialStorageAPIAccess.StorageFolder>
+@{
+    ViewBag.Title = "";
+    Layout = null;
+    string parent = "";
+    if (Model != null && Model.Count() > 0)
+    {
+        parent = Model.FirstOrDefault().Parent;
+    }
+}
+<input type="hidden" name="hdnCurrentParent" id="hdnCurrentParent" value="@parent" />
+<ul class="list-group">
+    @if (Model.Count() > 0)
+    {
+        foreach (var item in Model.OrderBy(list => (int)list.StorageContentType))
+        {
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-xs-1">
+                        @if (item.StorageContentType == StorageContentType.Folder)
+                    {
+                    <img src="~/Content/folderIcon.ico" width="32" />
+                    }
+                    else
+                    {
+                    <img src="~/Content/fileIcon.png" width="32" />
+                    }
+                    </div>
+                    <div class="col-xs-5">
+                        @if (item.StorageContentType == StorageContentType.Folder)
+                    {
+                    <a onclick="GetList('@item.Name','@item.Id')" style="cursor: pointer;">@item.Name</a>
+                    }
+                    else
+                    {
+                    <div class="updateElementClass">
+                        <span id="FileNameLabel" style="cursor: pointer;" onclick="OnFileNameClick(this)">@item.Name</span>
+                        <input id="FileNameInput" class="form-control" type="text" style="display:none" value="@item.Name" onkeyup="OnKeyUpRename(this,'@item.Id')">
+                    </div>
+                    }
+                    </div>
+                    <div class="col-xs-2">@item.StorageContentType.ToString()</div>
+                    @if (item.StorageContentType == StorageContentType.File)
+                {
+                <div class="col-xs-2"><button type="button" class="btn btn-info btn-sm" onclick="DownloadFile('@item.DonwloadLink')">Download</button></div>
+                <div class="col-xs-2"><button type="button" class="btn btn-danger btn-sm" onclick="DeleteFile('@item.Id',this)">Delete</button></div>
+                }
+                </div>
+            </li>
+        }
+    }
+    else
+    {
+        <span>Empty folder.</span>
+    }
+</ul>
